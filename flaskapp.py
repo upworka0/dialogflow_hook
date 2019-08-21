@@ -6,10 +6,6 @@ app = Flask(__name__)
 def index():
     return 'Hello World!'
 
-def save_file(text):
-    with open("static/log.txt", 'a') as f:
-        f.write(text)
-
 
 # function for responses
 def results():
@@ -18,7 +14,7 @@ def results():
 
     # fetch action from json
     action = req.get('queryResult').get('action')
-    save_file(action)
+    print("Action is %s " % action)
     # return a fulfillment response
     return {'fulfillmentText': 'This is a response from webhook.'}
 
