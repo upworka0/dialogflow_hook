@@ -125,9 +125,8 @@ def results():
 
     update_session(sess=sess)
     ques_obj = get_question_by_session(sess=sess)
-    logging.info('Next Question for session %s is %s' % (sess, ques_obj.body))
-    print(ques_obj)
     if ques_obj:
+        logging.info('Next Question for session %s is %s' % (sess, ques_obj.body))
         return {
             'fulfillmentText': adjust_question(ques_obj.body) if ques_obj.body != "" else adjust_question(
                 ques_obj.title)}
