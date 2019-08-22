@@ -123,8 +123,13 @@ def results():
     update_session(sess=sess)
     ques_obj = get_question_by_session(sess=sess)
     logging.info('Next Question for session %s is %s' % (sess, ques_obj.body))
-    return {
-        'fulfillmentText': adjust_question(ques_obj.body) if ques_obj.body != "" else adjust_question(ques_obj.title)}
+    if ques_obj:
+        return {
+            'fulfillmentText': adjust_question(ques_obj.body) if ques_obj.body != "" else adjust_question(
+                ques_obj.title)}
+    else:
+        return {
+            'fulfillmentText': "There is no any question remaining! Thank you!"}
     # return {'fulfillmentText': "What is your age? <br> 8?"}
 
 

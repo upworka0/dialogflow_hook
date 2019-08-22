@@ -29,4 +29,8 @@ Running :
     (venv) $ python flaskapp.py
 
 
+Test FAQ ChatBot Here
+---------------------
+
+    <a href="https://bot.dialogflow.com/546408f1-a627-43e8-b3f8-231a65b2273b">https://bot.dialogflow.com/546408f1-a627-43e8-b3f8-231a65b2273b</a>
 
