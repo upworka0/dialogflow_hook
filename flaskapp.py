@@ -105,10 +105,11 @@ def store_answer(ans_text, sess):
     que_obj = get_question_by_session(sess)
     botsess = session.query(BotSession).get(sess)
 
-    # create new answer object
-    answer_obj = Answer(response=ans_text, question=que_obj, session=botsess)
-    session.add(answer_obj)
-    session.commit()
+    if que_obj and botsess:
+        # create new answer object
+        answer_obj = Answer(response=ans_text, question=que_obj, session=botsess)
+        session.add(answer_obj)
+        session.commit()
 
 
 # function for responses
