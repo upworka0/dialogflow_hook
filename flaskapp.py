@@ -78,10 +78,14 @@ def check_bot_session(sess):
 
 
 def get_question_by_session(sess):
-    sess = session.query(BotSession).get(sess)
-    question_id = sess.question_id
-    ques = session.query(Question).get(question_id)
-    return ques
+    try:
+        sess = session.query(BotSession).get(sess)
+        question_id = sess.question_id
+        ques = session.query(Question).get(question_id)
+        return ques
+    except Exception as e:
+        print(e)
+        return None
 
 
 def update_session(sess):
