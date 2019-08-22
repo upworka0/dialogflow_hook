@@ -14,7 +14,6 @@ session = DBSession()
 
 # Logging configuration
 
-
 import logging
 
 logging.basicConfig(filename='log.log', level=logging.DEBUG, format='%(asctime)s %(message)s',
@@ -123,6 +122,7 @@ def results():
     update_session(sess=sess)
     ques_obj = get_question_by_session(sess=sess)
     logging.info('Next Question for session %s is %s' % (sess, ques_obj.body))
+    print(ques_obj)
     if ques_obj:
         return {
             'fulfillmentText': adjust_question(ques_obj.body) if ques_obj.body != "" else adjust_question(
