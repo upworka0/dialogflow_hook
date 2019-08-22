@@ -39,6 +39,7 @@ class Question(Base):
     def __str__(self):
         return self.title
 
+
 class BotSession(Base):
     __tablename__ = "sessions"
     # id = Column(Integer, primary_key=True, autoincrement=True)
@@ -48,6 +49,7 @@ class BotSession(Base):
 
     def __str__(self):
         return self.session
+
 
 class Answer(Base):
     __tablename__ = "answers"
