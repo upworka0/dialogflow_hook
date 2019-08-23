@@ -3,9 +3,12 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from models import Course, Base, Question, Answer, BotSession
 from config import *
+import os
 
 # Sqlalchemy Configuration
-engine = create_engine(DB_URL, connect_args={'check_same_thread': False})
+engine = create_engine(DB_URL, connect_args={'check_same_thread': False}) # Sqlite Connection
+# engine = create_engine(DB_URL) ## Mysql Connection
+
 engine.connect()
 Base.metadata.bind = engine
 
@@ -16,8 +19,7 @@ session = DBSession()
 
 import logging
 
-logging.basicConfig(filename='log.log', level=logging.DEBUG, format='%(asctime)s %(message)s',
-                    datefmt='%m/%d/%Y %I:%M:%S %p')
+logging.basicConfig(filename=os.path.dirname(os.path.abspath(__file__) + "/log.log"), level=logging.DEBUG, format='%(asctime)s %(message)s',datefmt='%m/%d/%Y %I:%M:%S %p')
 
 app = Flask(__name__)
 
@@ -145,4 +147,4 @@ def webhook():
 
 # run the app
 if __name__ == '__main__':
-    app.run(port=80, host='0.0.0.0')
+    app.run()
