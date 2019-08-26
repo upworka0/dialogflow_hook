@@ -74,14 +74,15 @@ def adjust_question(text):
 
 
 def check_bot_session(sess):
-    if session.query(BotSession).get(sess):
+    res = session.query(BotSession).filter_by(session=sess).first()
+    if res:
         return True
     return False
 
 
 def get_question_by_session(sess):
     try:
-        sess = session.query(BotSession).get(sess)
+        sess = session.query(BotSession).filter_by(session=sess).first()
         question_id = sess.question_id
         ques = session.query(Question).get(question_id)
         return ques
@@ -91,7 +92,7 @@ def get_question_by_session(sess):
 
 
 def update_session(sess):
-    sess_obj = session.query(BotSession).get(sess)
+    sess_obj = session.query(BotSession).filter_by(session=sess).first()
     if sess_obj:
         sess_obj.question_id = sess_obj.question_id + 1
     else:
@@ -105,7 +106,7 @@ def store_answer(ans_text, sess):
     Store answer and return BotSession
     """
     que_obj = get_question_by_session(sess)
-    botsess = session.query(BotSession).get(sess)
+    botsess = session.query(BotSession).filter_by(session=sess).first()
 
     if que_obj and botsess:
         # create new answer object

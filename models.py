@@ -42,8 +42,8 @@ class Question(Base):
 
 class BotSession(Base):
     __tablename__ = "sessions"
-    # id = Column(Integer, primary_key=True, autoincrement=True)
-    session = Column(String(250), primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    session = Column(String(250))
     question_id = Column(Integer, nullable=True)
     created = Column(DateTime, onupdate=datetime.datetime.now)
 
@@ -58,7 +58,7 @@ class Answer(Base):
     response = Column(Text())
     question_id = Column(Integer, ForeignKey('questions.id'))
     question = relationship(Question)
-    session_id = Column(String(250), ForeignKey("sessions.session"))
+    session_id = Column(Integer, ForeignKey("sessions.session"))
     session = relationship(BotSession)
     created = Column(DateTime, onupdate=datetime.datetime.now)
 
