@@ -58,7 +58,7 @@ class Answer(Base):
     response = Column(Text())
     question_id = Column(Integer, ForeignKey('questions.id'))
     question = relationship(Question)
-    session_id = Column(Integer, ForeignKey("sessions.session"))
+    session_id = Column(Integer, ForeignKey("sessions.id"))
     session = relationship(BotSession)
     created = Column(DateTime, onupdate=datetime.datetime.now)
 

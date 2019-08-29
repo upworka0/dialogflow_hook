@@ -6,8 +6,8 @@ from config import *
 import os
 
 # Sqlalchemy Configuration
-engine = create_engine(DB_URL, connect_args={'check_same_thread': False}) # Sqlite Connection
-# engine = create_engine(DB_URL) ## Mysql Connection
+# engine = create_engine(DB_URL) # Sqlite Connection
+engine = create_engine(DB_URL)  ## Mysql Connection
 
 engine.connect()
 Base.metadata.bind = engine
@@ -19,7 +19,7 @@ session = DBSession()
 
 import logging
 
-logging.basicConfig(filename=os.path.dirname(os.path.abspath(__file__) + "/log.log"), level=logging.DEBUG, format='%(asctime)s %(message)s',datefmt='%m/%d/%Y %I:%M:%S %p')
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 
 app = Flask(__name__)
 
@@ -29,33 +29,41 @@ def index():
     """
     Return all answers as JSON format
     """
-    res = session.query(Answer).all()
-    session.rollback()
     data = []
-    for row in res:
-        row_data = {
-            "question": row.id,
-            "session": row.session.session,
-            "answer": row.response,
-            "created": row.created
-        }
-        data.append(row_data)
+    try:
+        res = session.query(Answer).all()
+        for row in res:
+            row_data = {
+                "question": row.id,
+                "session": row.session.session,
+                "answer": row.response,
+                "created": row.created
+            }
+            data.append(row_data)
+    except Exception as e:
+        print(e)
+        session.rollback()
+
     return jsonify(data)
 
 
 @app.route('/questions')
 def questions():
-    res = session.query(Question).all()
-    session.rollback()
     data = []
-    for row in res:
-        row_data = {
-            "question": row.question_id,
-            "title": row.title,
-            "body": row.body,
-            "created": row.created
-        }
-        data.append(row_data)
+    try:
+        res = session.query(Question).all()
+        for row in res:
+            row_data = {
+                "question": row.question_id,
+                "title": row.title,
+                "body": row.body,
+                "created": row.created
+            }
+            data.append(row_data)
+    except Exception as e:
+        print(e)
+        session.rollback()
+
     return jsonify(data)
 
 
@@ -75,6 +83,7 @@ def adjust_question(text):
 
 def check_bot_session(sess):
     res = session.query(BotSession).filter_by(session=sess).first()
+    print(res)
     if res:
         return True
     return False
@@ -88,31 +97,41 @@ def get_question_by_session(sess):
         return ques
     except Exception as e:
         print(e)
+        session.rollback()
         return None
 
 
 def update_session(sess):
-    sess_obj = session.query(BotSession).filter_by(session=sess).first()
-    if sess_obj:
-        sess_obj.question_id = sess_obj.question_id + 1
-    else:
-        sess_obj = BotSession(session=sess, question_id=1)
-        session.add(sess_obj)
-    session.commit()
+    try:
+        sess_obj = session.query(BotSession).filter_by(session=sess).first()
+        if sess_obj:
+            sess_obj.question_id = sess_obj.question_id + 1
+        else:
+            sess_obj = BotSession(session=sess, question_id=1)
+            session.add(sess_obj)
+        session.commit()
+    except Exception as e:
+        print(e)
+        session.rollback()
+        return None
 
 
 def store_answer(ans_text, sess):
     """
     Store answer and return BotSession
     """
-    que_obj = get_question_by_session(sess)
-    botsess = session.query(BotSession).filter_by(session=sess).first()
+    try:
+        que_obj = get_question_by_session(sess)
+        botsess = session.query(BotSession).filter_by(session=sess).first()
 
-    if que_obj and botsess:
-        # create new answer object
-        answer_obj = Answer(response=ans_text, question=que_obj, session=botsess)
-        session.add(answer_obj)
-        session.commit()
+        if que_obj and botsess:
+            # create new answer object
+            answer_obj = Answer(response=ans_text, question=que_obj, session=botsess)
+            session.add(answer_obj)
+            session.commit()
+    except Exception as e:
+        print(e)
+        session.rollback()
 
 
 # function for responses
@@ -122,6 +141,7 @@ def results():
 
     sess = extract_session(req.get('session'))
     logging.info('Session is %s' % sess)
+
     if check_bot_session(sess):
         ans_text = req.get('queryResult').get('parameters').get('any')
         store_answer(ans_text=ans_text, sess=sess)
@@ -130,14 +150,23 @@ def results():
     update_session(sess=sess)
     ques_obj = get_question_by_session(sess=sess)
     if ques_obj:
-        logging.info('Next Question for session %s is %s' % (sess, ques_obj.body))
-        return {
+        # logging.info('Next Question for session %s is %s' % (sess, ques_obj.body))
+        res = {
             'fulfillmentText': adjust_question(ques_obj.body) if ques_obj.body != "" else adjust_question(
-                ques_obj.title)}
+                ques_obj.title)
+        }
     else:
-        return {
-            'fulfillmentText': "There is no any question remaining! Thank you!"}
-    # return {'fulfillmentText': "What is your age? <br> 8?"}
+        res = {
+            "outputContexts": [
+                {
+                    "name": "%s/%s" % (req.get('session'), "contexts/awaiting_questions"),
+                    "lifespanCount": 0
+                }
+            ],
+            'fulfillmentText': "There is no any question remaining! Thank you!"
+        }
+    print(res)
+    return res
 
 
 # create a route for web hook
