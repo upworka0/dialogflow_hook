@@ -111,14 +111,15 @@ class Udemy:
 
 
 client = Udemy(access_token=ACCESS_TOKEN)
+
 # # testing with test.json file
-client.test_with_json('test.json')
+# client.test_with_json('test.json')
 
 # url params
-# dict ={
-#     "page_size": 100,
-#     "status": "unread",
-#     "course": 950390,
-#     "ordering": "recency"
-# }
-# client.start(dict)
+dict ={
+    "page_size": 100,
+    "status": "unread",
+    "course": 950390,
+    "ordering": "recency"
+}
+client.start(dict)
