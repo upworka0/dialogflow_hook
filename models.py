@@ -40,17 +40,6 @@ class Question(Base):
         return self.title
 
 
-class BotSession(Base):
-    __tablename__ = "sessions"
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    session = Column(String(250))
-    question_id = Column(Integer, nullable=True)
-    created = Column(DateTime, onupdate=datetime.datetime.now)
-
-    def __str__(self):
-        return self.session
-
-
 class Answer(Base):
     __tablename__ = "answers"
 
@@ -58,8 +47,6 @@ class Answer(Base):
     response = Column(Text())
     question_id = Column(Integer, ForeignKey('questions.id'))
     question = relationship(Question)
-    session_id = Column(Integer, ForeignKey("sessions.id"))
-    session = relationship(BotSession)
     created = Column(DateTime, onupdate=datetime.datetime.now)
 
     def __str__(self):

@@ -3,3 +3,5 @@ requests
 gunicorn
 SQLAlchemy
 mysqlclient==1.4.2.post1
+dialogflow
+pusher
