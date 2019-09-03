@@ -5,6 +5,7 @@ from models import Course, Base, Question, Answer
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from pprint import pprint
+import re
 
 
 import logging
@@ -32,6 +33,21 @@ class AnswerBot:
 
     def __init__(self, project_id):
         self.project_id = project_id
+
+    def adjust_question(self, text):
+        text = text.replace('<p>', ' ')
+        text = text.replace('</p>', ' ')
+        text = text.replace('<br/>', ' ')
+        text = text.replace('<br>', ' ')
+        text = text.replace('&nbsp;', ' ')
+        text = text.replace('<pre>', ' ')
+        text = text.replace('</pre>', ' ')
+
+        while len(re.findall(r'\  ', text)) > 0:
+            text = text.replace('  ', ' ')
+        text = text.strip()
+
+        return text.strip()
 
     def detect_intent_texts(self, text):
         """
@@ -81,6 +97,7 @@ class AnswerBot:
             else:
                 que_text = row.body
 
+            que_text = self.adjust_question(que_text)[0:255]
             response = self.detect_intent_texts(que_text)
             self.store_answer(response, row)
             print("Question is `%s`" % que_text)
