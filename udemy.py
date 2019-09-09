@@ -109,6 +109,17 @@ class Udemy:
         while self.get_request(dict=dict):
             print(self.next_url)
 
+    def _answer(self, course, question_id, user_id, answer_text):
+        """
+        Answer to quetion of course with user id
+        :param course: course
+        :param question_id: id of questions
+        :param user_id: id of user to answer
+        :param answer_text: answer
+        :return: None
+        """
+        pass
+
 
 client = Udemy(access_token=ACCESS_TOKEN)
 
