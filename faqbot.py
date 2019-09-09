@@ -83,6 +83,17 @@ class AnswerBot:
         except:
             session.rollback()
 
+    def _answer(self, course, question_id, user_id, answer_text):
+        """
+        Answer to quetion of course with user id
+        :param course: course
+        :param question_id: id of questions
+        :param user_id: id of user to answer
+        :param answer_text: answer
+        :return: None
+        """
+        pass
+
     def run(self):
         """
         Running instance for all questions
