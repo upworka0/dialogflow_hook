@@ -6,7 +6,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from pprint import pprint
 import re
-
+import requests
+import json
 
 import logging
 logging.basicConfig(filename='log.log', level=logging.DEBUG, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
@@ -30,9 +31,40 @@ class AnswerBot:
     project_id = None
     session_id = "unique"
     language_code = "en"
+    BASE_URL = "https://www.udemy.com/instructor-api/v1/courses/{0}/questions/{1}/replies/"
+    access_token = ""
 
-    def __init__(self, project_id):
+
+    def __init__(self, project_id, access_token=None):
         self.project_id = project_id
+        self.access_token = access_token
+
+    def get_headers(self):
+        return {
+            "Authorization": "bearer %s" % self.access_token,
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+        }
+
+    def _answer(self, course_id, question_id, user_id, answer_text):
+        payload = {
+            "course_id": course_id,
+            "question_id": question_id,
+            "body": answer_text
+        }
+
+        url = self.BASE_URL.format(course_id, question_id)
+        logging.info("REQUEST to %s " % url)
+        logging.info("REQUEST payload : %s" % json.dumps(payload))
+        print(url)
+
+        res = requests.post(url, data=payload, headers=self.get_headers())
+        response = res.json()
+        if res.status_code > 200:
+            logging.error("Error: %s " % response['detail'])
+        else:
+            logging.info("Response : %s" % json.dumps(response))
+        pprint(response)
 
     def adjust_question(self, text):
         text = text.replace('<p>', ' ')
@@ -80,19 +112,12 @@ class AnswerBot:
             answer_obj = Answer(response=answer, question=que)
             session.add(answer_obj)
             session.commit()
+
+            # send answer to api endpoint
+            self._answer(que.course.id, que.id, None, answer)
         except:
             session.rollback()
 
-    def _answer(self, course, question_id, user_id, answer_text):
-        """
-        Answer to quetion of course with user id
-        :param course: course
-        :param question_id: id of questions
-        :param user_id: id of user to answer
-        :param answer_text: answer
-        :return: None
-        """
-        pass
 
     def run(self):
         """
