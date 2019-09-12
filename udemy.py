@@ -119,6 +119,28 @@ class Udemy:
         if res.status_code > 200:
             logging.error("Error: %s " % response['detail'])
         else:
+            print("------------------ Course Questions ---------------------------")
+            pprint(response)
+
+    def get_api_taught_course_questions(self):
+        URL = "https://www.udemy.com/instructor-api/v1/taught-courses/questions/?course=950390&ordering=recency&page=2&page_size=12&status=unread&fields[question]=@all"
+        res = requests.get(URL, headers=self.get_headers())
+        response = res.json()
+        if res.status_code > 200:
+            logging.error("Error: %s " % response['detail'])
+        else:
+            print("------------------ Taught Couse Questions ---------------------------")
+            pprint(response)
+
+
+    def get_api_answers(self, course_id, question_id):
+        URL = "https://www.udemy.com/instructor-api/v1/%s/questions/%s/replies/" % (course_id, question_id)
+        res = requests.get(URL, headers=self.get_headers())
+        response = res.json()
+        if res.status_code > 200:
+            logging.error("Error: %s " % response['detail'])
+        else:
+            print("------------------ Replies ---------------------------")
             pprint(response)
 
 
@@ -137,3 +159,5 @@ client = Udemy(access_token=ACCESS_TOKEN)
 # client.start(dict)
 
 client.get_api_course_questions()
+print("----------------------------------------------")
+client.get_api_taught_course_questions()
