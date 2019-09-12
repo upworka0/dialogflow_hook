@@ -150,14 +150,14 @@ client = Udemy(access_token=ACCESS_TOKEN)
 # client.test_with_json('test.json')
 
 # url params
-# dict ={
-#     "page_size": 100,
-#     "status": "unread",
-#     "course": 950390,
-#     "ordering": "recency"
-# }
-# client.start(dict)
+dict ={
+    "page_size": 100,
+    "status": "unread",
+    "course": 950390,
+    "ordering": "recency"
+}
+client.start(dict)
 
-client.get_api_course_questions()
-print("----------------------------------------------")
-client.get_api_taught_course_questions()
+# client.get_api_course_questions()
+# print("----------------------------------------------")
+# client.get_api_taught_course_questions()
