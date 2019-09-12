@@ -61,8 +61,8 @@ class UdemyAnswer:
 
 if __name__ == '__main__':
     udemy = UdemyAnswer(access_token='test')
-    udemy._answer(1,1,1,"test")
-
+    # udemy._answer(1,1,1,"test")
+    udemy._answer("x01JUY15zH9s9_lzjMlyuxG-g==", "x01Yx324gCaA2VmKGJZJPMqRQ==", 1, "test")
 
     """
         Testing:

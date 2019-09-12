@@ -6,7 +6,10 @@ from urllib.parse import urlencode
 import json
 from config import DB_URL, ACCESS_TOKEN
 import logging
+from pprint import pprint
+
 logging.basicConfig(filename='log.log', level=logging.DEBUG, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+
 
 engine = create_engine(DB_URL)
 engine.connect()
@@ -17,7 +20,7 @@ session = DBSession()
 
 class Udemy:
     DB_CONFIG = 'mysql://root:password@localhost/udemy?charset=utf8mb4'
-    BASE_URL = "https://www.udemy.com/instructor-api/v1/taught-courses/questions/?"
+    BASE_URL = "https://www.udemy.com/instructor-api/v1/taught-courses/questions/?fields[question]=@all"
 
     max_page_size = 100
     next_url = ''
@@ -109,6 +112,15 @@ class Udemy:
         while self.get_request(dict=dict):
             print(self.next_url)
 
+    def get_api_course_questions(self):
+        URL = "https://www.udemy.com/instructor-api/v1/courses/950390/questions/"
+        res = requests.get(URL, headers=self.get_headers())
+        response = res.json()
+        if res.status_code > 200:
+            logging.error("Error: %s " % response['detail'])
+        else:
+            pprint(response)
+
 
 client = Udemy(access_token=ACCESS_TOKEN)
 
@@ -116,10 +128,12 @@ client = Udemy(access_token=ACCESS_TOKEN)
 # client.test_with_json('test.json')
 
 # url params
-dict ={
-    "page_size": 100,
-    "status": "unread",
-    "course": 950390,
-    "ordering": "recency"
-}
-client.start(dict)
+# dict ={
+#     "page_size": 100,
+#     "status": "unread",
+#     "course": 950390,
+#     "ordering": "recency"
+# }
+# client.start(dict)
+
+client.get_api_course_questions()

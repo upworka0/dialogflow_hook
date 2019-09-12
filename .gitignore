@@ -6,3 +6,4 @@ __pycache__/
 log.log
 bot.json
 FAQBot.json
+database.sqlite
