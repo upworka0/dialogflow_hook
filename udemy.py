@@ -116,7 +116,7 @@ class Udemy:
         URL = "https://www.udemy.com/instructor-api/v1/courses/950390/questions/"
         res = requests.get(URL, headers=self.get_headers())
         response = res.json()
-        if res.status_code > 200:
+        if res.status_code > 400:
             logging.error("Error: %s " % response['detail'])
         else:
             print("------------------ Course Questions ---------------------------")
@@ -126,7 +126,7 @@ class Udemy:
         URL = "https://www.udemy.com/instructor-api/v1/taught-courses/questions/?course=950390&ordering=recency&page=2&page_size=12&status=unread&fields[question]=@all"
         res = requests.get(URL, headers=self.get_headers())
         response = res.json()
-        if res.status_code > 200:
+        if res.status_code > 400:
             logging.error("Error: %s " % response['detail'])
         else:
             print("------------------ Taught Couse Questions ---------------------------")
@@ -137,7 +137,7 @@ class Udemy:
         URL = "https://www.udemy.com/instructor-api/v1/%s/questions/%s/replies/" % (course_id, question_id)
         res = requests.get(URL, headers=self.get_headers())
         response = res.json()
-        if res.status_code > 200:
+        if res.status_code > 400:
             logging.error("Error: %s " % response['detail'])
         else:
             print("------------------ Replies ---------------------------")
