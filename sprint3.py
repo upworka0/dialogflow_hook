@@ -40,8 +40,6 @@ class UdemyAnswer:
 
     def _answer(self, course_id, question_id, user_id, answer_text):
         payload = {
-            "course_id": course_id,
-            "question_id": question_id,
             "body": answer_text
         }
 
@@ -51,7 +49,6 @@ class UdemyAnswer:
         print(url)
 
         res = requests.post(url, data=payload, headers=self.get_headers())
-        print(self.get_headers())
         response = res.json()
         if res.status_code > 400:
             logging.error("Error: %s " % response['detail'])
