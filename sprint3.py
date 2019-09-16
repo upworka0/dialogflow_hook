@@ -49,6 +49,7 @@ class UdemyAnswer:
         print(url)
         print(payload)
         res = requests.post(url, data=payload, headers=self.get_headers())
+        print(res.text)
         response = res.json()
         if res.status_code > 400:
             logging.error("Error: %s " % response['detail'])
