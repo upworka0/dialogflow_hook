@@ -43,25 +43,52 @@ class UdemyAnswer:
             "body": answer_text
         }
 
-        url = self.BASE_URL.format(course_id, question_id)
+        url = "https://www.udemy.com/instructor-api/v1/courses/%s/questions/%s/replies/" % (course_id, question_id)
         logging.info("REQUEST to %s " % url)
         logging.info("REQUEST payload : %s" % json.dumps(payload))
         print(url)
-        print(payload)
         res = requests.post(url, data=payload, headers=self.get_headers())
-        print(res.text)
         response = res.json()
+        pprint(response)
+        print(res.status_code)
         if res.status_code > 400:
             logging.error("Error: %s " % response['detail'])
         else:
             logging.info("Response : %s" % json.dumps(response))
+
+    def _answer1(self, course_id, question_id, user_id, answer_text):
+        url = "https://www.udemy.com/instructor-api/v1/courses/%s/questions/%s/replies/" % (course_id, question_id)
+        logging.info("REQUEST to %s " % url)
+        print(url)
+        res = requests.post(url, json={"body": "test"}, headers=self.get_headers())
+        response = res.json()
         pprint(response)
+        print(res.status_code)
+        if res.status_code > 400:
+            logging.error("Error: %s " % response['detail'])
+        else:
+            logging.info("Response : %s" % json.dumps(response))
+
+    def _answer2(self, course_id, question_id, user_id, answer_text):
+        url = "https://www.udemy.com/instructor-api/v1/courses/%s/questions/%s/replies/" % (course_id, question_id)
+        logging.info("REQUEST to %s " % url)
+        print(url)
+        res = requests.post(url, data=json.dumps({"body": "test"}), headers=self.get_headers())
+        response = res.json()
+        pprint(response)
+        print(res.status_code)
+        if res.status_code > 400:
+            logging.error("Error: %s " % response['detail'])
+        else:
+            logging.info("Response : %s" % json.dumps(response))
 
 
 if __name__ == '__main__':
     udemy = UdemyAnswer(access_token=ACCESS_TOKEN)
     # udemy._answer(1,1,1,"test")
     udemy._answer("x01qeGSHjE7B-Vi7kqfXvCTlw==", "x01RuwcQJm4bPC3ngSsPSv0kg==", 1, "test")
+    udemy._answer1("x01qeGSHjE7B-Vi7kqfXvCTlw==", "x01RuwcQJm4bPC3ngSsPSv0kg==", 1, "test")
+    udemy._answer2("x01qeGSHjE7B-Vi7kqfXvCTlw==", "x01RuwcQJm4bPC3ngSsPSv0kg==", 1, "test")
 
     """
         Testing:
