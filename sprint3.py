@@ -34,8 +34,8 @@ class UdemyAnswer:
     def get_headers(self):
         return {
             "Authorization": "bearer %s" % self.access_token,
-            "Content-Type": "application/json",
-            "Accept": "application/json"
+            "Content-Type": "application/json;charset=utf-8",
+            "Accept": "application/json, text/plain, */*"
         }
 
     def _answer(self, course_id, question_id, user_id, answer_text):
@@ -47,7 +47,7 @@ class UdemyAnswer:
         logging.info("REQUEST to %s " % url)
         logging.info("REQUEST payload : %s" % json.dumps(payload))
         print(url)
-
+        print(payload)
         res = requests.post(url, data=payload, headers=self.get_headers())
         response = res.json()
         if res.status_code > 400:
