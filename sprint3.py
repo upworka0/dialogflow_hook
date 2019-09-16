@@ -51,6 +51,7 @@ class UdemyAnswer:
         print(url)
 
         res = requests.post(url, data=payload, headers=self.get_headers())
+        print(self.get_headers())
         response = res.json()
         if res.status_code > 400:
             logging.error("Error: %s " % response['detail'])
@@ -60,7 +61,7 @@ class UdemyAnswer:
 
 
 if __name__ == '__main__':
-    udemy = UdemyAnswer(access_token='test')
+    udemy = UdemyAnswer(access_token=ACCESS_TOKEN)
     # udemy._answer(1,1,1,"test")
     udemy._answer("x01qeGSHjE7B-Vi7kqfXvCTlw==", "x01RuwcQJm4bPC3ngSsPSv0kg==", 1, "test")
 

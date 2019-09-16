@@ -64,7 +64,7 @@ class AnswerBot:
             logging.error("Error: %s " % response['detail'])
         else:
             logging.info("Response : %s" % json.dumps(response))
-        print("Answer id is %s" % response['id'])
+        print("Answer was sent to Udemy successfully, Answer id is %s" % response['id'])
 
     def adjust_question(self, text):
         text = text.replace('<p>', ' ')
