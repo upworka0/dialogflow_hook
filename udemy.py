@@ -55,7 +55,7 @@ class Udemy:
         if not question:
             question = Question(question_id=question_id, title=dict['title'], body=dict['body'], num_replies=dict['num_replies'],
                                 num_follows=dict['num_follows'], num_reply_upvotes=dict['num_reply_upvotes'], created=dict['created'],
-                                course=course)
+                                course=course, replied=False)
             session.add(question)
             session.commit()
             self.total_count = self.total_count + 1
