@@ -60,20 +60,46 @@ class UdemyAnswer:
         url = "https://www.udemy.com/instructor-api/v1/courses/%s/questions/%s/replies/" % (course_id, question_id)
         logging.info("REQUEST to %s " % url)
         print(url)
-        res = requests.post(url, json={"body": "test"}, headers=self.get_headers())
-        response = res.json()
-        pprint(response)
-        print(res.status_code)
-        if res.status_code > 400:
-            logging.error("Error: %s " % response['detail'])
-        else:
-            logging.info("Response : %s" % json.dumps(response))
+        try:
+            res = requests.post(url, json={"body": "test"}, headers=self.get_headers())
+            response = res.json()
+            pprint(response)
+            print(res.status_code)
+            if res.status_code > 400:
+                logging.error("Error: %s " % response['detail'])
+            else:
+                logging.info("Response : %s" % json.dumps(response))
+        except:
+            pass
 
     def _answer2(self, course_id, question_id, user_id, answer_text):
         url = "https://www.udemy.com/instructor-api/v1/courses/%s/questions/%s/replies/" % (course_id, question_id)
         logging.info("REQUEST to %s " % url)
         print(url)
-        res = requests.post(url, data=json.dumps({"body": "test"}), headers=self.get_headers())
+        try:
+            res = requests.post(url, data=json.dumps({"body": "test"}), headers=self.get_headers())
+            response = res.json()
+            pprint(response)
+            print(res.status_code)
+            if res.status_code > 400:
+                logging.error("Error: %s " % response['detail'])
+            else:
+                logging.info("Response : %s" % json.dumps(response))
+        except:
+            pass
+
+
+
+
+    def _answer3(self, course_id, question_id, user_id, answer_text):
+        url = "https://www.udemy.com/instructor-api/v1/courses/%s/questions/%s/replies/" % (course_id, question_id)
+        logging.info("REQUEST to %s " % url)
+        headers = {
+            "Authorization": "bearer %s" % self.access_token,
+        }
+        print(url)
+        res = requests.post(url, data={"body": "test"}, headers=self.get_headers())
+        print(res.text)
         response = res.json()
         pprint(response)
         print(res.status_code)
@@ -82,7 +108,48 @@ class UdemyAnswer:
         else:
             logging.info("Response : %s" % json.dumps(response))
 
+    def _answer4(self, course_id, question_id, user_id, answer_text):
+        url = "https://www.udemy.com/instructor-api/v1/courses/%s/questions/%s/replies/" % (course_id, question_id)
+        logging.info("REQUEST to %s " % url)
+        headers = {
+            "Authorization": "bearer %s" % self.access_token,
+        }
+        print(url)
+        try:
+            res = requests.post(url, json={"body": "test"}, headers=self.get_headers())
+            print(res.text)
+            response = res.json()
+            pprint(response)
+            print(res.status_code)
+            if res.status_code > 400:
+                logging.error("Error: %s " % response['detail'])
+            else:
+                logging.info("Response : %s" % json.dumps(response))
+        except:
+            pass
 
+
+    def _answer5(self, course_id, question_id, user_id, answer_text):
+        url = "https://www.udemy.com/instructor-api/v1/courses/%s/questions/%s/replies/" % (course_id, question_id)
+        logging.info("REQUEST to %s " % url)
+        headers = {
+            "Authorization": "bearer %s" % self.access_token,
+        }
+        print(url)
+        try:
+            res = requests.post(url, data=json.dumps({"body": "test"}), headers=self.get_headers())
+            print(res.text)
+            response = res.json()
+            pprint(response)
+            print(res.status_code)
+            if res.status_code > 400:
+                logging.error("Error: %s " % response['detail'])
+            else:
+                logging.info("Response : %s" % json.dumps(response))
+        except:
+            pass
+
+        
 if __name__ == '__main__':
     udemy = UdemyAnswer(access_token=ACCESS_TOKEN)
     # udemy._answer(1,1,1,"test")
