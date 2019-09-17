@@ -49,6 +49,7 @@ class UdemyAnswer:
         print(url)
         res = requests.post(url, data=payload, headers=self.get_headers())
         response = res.json()
+        print(res.text)
         pprint(response)
         print(res.status_code)
         if res.status_code > 400:
@@ -62,6 +63,7 @@ class UdemyAnswer:
         print(url)
         try:
             res = requests.post(url, json={"body": "test"}, headers=self.get_headers())
+            print(res.text)
             response = res.json()
             pprint(response)
             print(res.status_code)
@@ -78,6 +80,7 @@ class UdemyAnswer:
         print(url)
         try:
             res = requests.post(url, data=json.dumps({"body": "test"}), headers=self.get_headers())
+            print(res.text)
             response = res.json()
             pprint(response)
             print(res.status_code)
@@ -149,13 +152,22 @@ class UdemyAnswer:
         except:
             pass
 
-        
+
 if __name__ == '__main__':
     udemy = UdemyAnswer(access_token=ACCESS_TOKEN)
     # udemy._answer(1,1,1,"test")
+    print("-------------------------- Answer ---------------------------------------------\r\n")
     udemy._answer("x01qeGSHjE7B-Vi7kqfXvCTlw==", "x01RuwcQJm4bPC3ngSsPSv0kg==", 1, "test")
+    print("-------------------------- Answer 1---------------------------------------------\r\n")
     udemy._answer1("x01qeGSHjE7B-Vi7kqfXvCTlw==", "x01RuwcQJm4bPC3ngSsPSv0kg==", 1, "test")
+    print("-------------------------- Answer 2---------------------------------------------\r\n")
     udemy._answer2("x01qeGSHjE7B-Vi7kqfXvCTlw==", "x01RuwcQJm4bPC3ngSsPSv0kg==", 1, "test")
+    print("-------------------------- Answer 3---------------------------------------------\r\n")
+    udemy._answer3("x01qeGSHjE7B-Vi7kqfXvCTlw==", "x01RuwcQJm4bPC3ngSsPSv0kg==", 1, "test")
+    print("-------------------------- Answer 4---------------------------------------------\r\n")
+    udemy._answer4("x01qeGSHjE7B-Vi7kqfXvCTlw==", "x01RuwcQJm4bPC3ngSsPSv0kg==", 1, "test")
+    print("-------------------------- Answer 5---------------------------------------------\r\n")
+    udemy._answer5("x01qeGSHjE7B-Vi7kqfXvCTlw==", "x01RuwcQJm4bPC3ngSsPSv0kg==", 1, "test")
 
     """
         Testing:
