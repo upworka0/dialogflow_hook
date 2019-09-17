@@ -42,14 +42,12 @@ class AnswerBot:
     def get_headers(self):
         return {
             "Authorization": "bearer %s" % self.access_token,
-            "Content-Type": "application/json",
-            "Accept": "application/json"
+            "Content-Type": "application/json;charset=utf-8",
+            "Accept": "application/json, text/plain, */*"
         }
 
     def _answer(self, course_id, question_id, user_id, answer_text):
         payload = {
-            "course_id": course_id,
-            "question_id": question_id,
             "body": answer_text
         }
 
@@ -58,7 +56,7 @@ class AnswerBot:
         logging.info("REQUEST payload : %s" % json.dumps(payload))
         print(url)
 
-        res = requests.post(url, data=payload, headers=self.get_headers())
+        res = requests.post(url, data=json.dumps(payload), headers=self.get_headers())
         response = res.json()
         if res.status_code > 400:
             logging.error("Error: %s " % response['detail'])
@@ -109,12 +107,13 @@ class AnswerBot:
         """
         try:
             # create new answer object
+            que.replied = True
             answer_obj = Answer(response=answer, question=que)
             session.add(answer_obj)
             session.commit()
 
             # send answer to api endpoint
-            self._answer(que.course.id, que.id, None, answer)
+            # self._answer(que.course.id, que.id, None, answer)
         except:
             session.rollback()
 
@@ -124,8 +123,22 @@ class AnswerBot:
         Running instance for all questions
         :return: None
         """
+        unexpected_answers = [
+            "I didn't get that. Can you say it again?",
+            "I missed what you said. What was that?",
+            "Sorry, could you say that again?",
+            "Sorry, can you say that again?",
+            "Can you say that again?",
+            "Sorry, I didn't get that. Can you rephrase?",
+            "Sorry, what was that?",
+            "One more time?",
+            "What was that?",
+            "Say that one more time?",
+            "I didn't get that. Can you repeat?",
+            "I missed that, say that again?"
+        ]
 
-        ques = session.query(Question).all()
+        ques = session.query(Question).filter_by(replied=False).all()
         for row in ques:
             que_text = ""
             if row.body == '':
@@ -135,6 +148,10 @@ class AnswerBot:
 
             que_text = self.adjust_question(que_text)[0:255]
             response = self.detect_intent_texts(que_text)
+
+            if response in unexpected_answers:
+                response = "I'm sorry I didn't understand that! Can you please repeat the question and one of our TA's will respond shortly to assist <br> can we use that?"
+
             self.store_answer(response, row)
             print("Question is `%s`" % que_text)
             print("Answer is `%s`\n" % response)

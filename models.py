@@ -1,5 +1,5 @@
 from config import DB_URL
-from sqlalchemy import Column, ForeignKey, Integer, String, Text, DateTime
+from sqlalchemy import Column, ForeignKey, Integer, String, Text, DateTime, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
@@ -35,6 +35,7 @@ class Question(Base):
     created = Column(String(20))
     course_id = Column(String(250), ForeignKey('courses.id'))
     course = relationship(Course)
+    replied = Column(Boolean, default=False)
 
     def __str__(self):
         return self.title

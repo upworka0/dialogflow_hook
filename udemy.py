@@ -33,8 +33,8 @@ class Udemy:
     def get_headers(self):
         return {
             "Authorization": "bearer %s" % self.access_token,
-            "Content-Type": "application/json",
-            "Accept": "application/json"
+            "Content-Type": "application/json;charset=utf-8",
+            "Accept": "application/json, text/plain, */*"
         }
 
     def insert_db(self, dict):
@@ -111,38 +111,6 @@ class Udemy:
         """
         while self.get_request(dict=dict):
             print(self.next_url)
-
-    def get_api_course_questions(self):
-        URL = "https://www.udemy.com/instructor-api/v1/courses/950390/questions/"
-        res = requests.get(URL, headers=self.get_headers())
-        response = res.json()
-        if res.status_code > 400:
-            logging.error("Error: %s " % response['detail'])
-        else:
-            print("------------------ Course Questions ---------------------------")
-            pprint(response)
-
-    def get_api_taught_course_questions(self):
-        URL = "https://www.udemy.com/instructor-api/v1/taught-courses/questions/?course=950390&ordering=recency&page=2&page_size=12&status=unread&fields[question]=@all"
-        res = requests.get(URL, headers=self.get_headers())
-        response = res.json()
-        if res.status_code > 400:
-            logging.error("Error: %s " % response['detail'])
-        else:
-            print("------------------ Taught Couse Questions ---------------------------")
-            pprint(response)
-
-
-    def get_api_answers(self, course_id, question_id):
-        URL = "https://www.udemy.com/instructor-api/v1/%s/questions/%s/replies/" % (course_id, question_id)
-        res = requests.get(URL, headers=self.get_headers())
-        response = res.json()
-        if res.status_code > 400:
-            logging.error("Error: %s " % response['detail'])
-        else:
-            print("------------------ Replies ---------------------------")
-            pprint(response)
-
 
 client = Udemy(access_token=ACCESS_TOKEN)
 

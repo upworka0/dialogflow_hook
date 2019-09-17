@@ -17,7 +17,6 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
-
 class UdemyAnswer:
     DB_CONFIG = 'mysql://root:password@localhost/udemy?charset=utf8mb4'
     """
