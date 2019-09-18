@@ -107,14 +107,16 @@ class AnswerBot:
         :return: None
         """
         try:
+            # send answer to api endpoint
+            self._answer(que.course.id, que.id, None, answer)
+
             # create new answer object
             que.replied = True
             answer_obj = Answer(response=answer, question=que)
             session.add(answer_obj)
             session.commit()
 
-            # send answer to api endpoint
-            self._answer(que.course.id, que.id, None, answer)
+
         except:
             session.rollback()
 
