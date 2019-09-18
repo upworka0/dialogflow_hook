@@ -75,9 +75,9 @@ class Udemy:
             logging.error("Error: %s " % response['detail'])
         else:
             try:
-                self.next_url = response['next']
                 for row in response['results']:
                     self.insert_db(row)
+                self.next_url = response['next']
                 if self.next_url:
                     return True
             except Exception as e:
@@ -120,7 +120,7 @@ client = Udemy(access_token=ACCESS_TOKEN)
 # url params
 dict ={
     "page_size": 100,
-    "status": "unread",
+    "status": "unanswered",
     "course": 950390,
     "ordering": "recency"
 }
