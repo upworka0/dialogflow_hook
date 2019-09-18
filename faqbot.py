@@ -60,6 +60,7 @@ class AnswerBot:
         response = res.json()
         if res.status_code > 400:
             logging.error("Error: %s " % response['detail'])
+            raise Exception('Error was occurred in answer to Udemy')
         else:
             logging.info("Response : %s" % json.dumps(response))
         print("Answer was sent to Udemy successfully, Answer id is %s" % response['id'])
@@ -113,7 +114,7 @@ class AnswerBot:
             session.commit()
 
             # send answer to api endpoint
-            # self._answer(que.course.id, que.id, None, answer)
+            self._answer(que.course.id, que.id, None, answer)
         except:
             session.rollback()
 

@@ -125,7 +125,7 @@ client = Udemy(access_token=ACCESS_TOKEN)
 # url params
 dict ={
     "page_size": 100,
-    "status": "unanswered",
+    "status": "unresponded",
     "course": 950390,
     "ordering": "recency"
 }
