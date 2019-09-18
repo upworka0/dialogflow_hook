@@ -74,6 +74,7 @@ class Udemy:
         if res.status_code > 200:
             logging.error("Error: %s " % response['detail'])
         else:
+            logging.info("response: %s " % json.dumps(response))
             try:
                 for row in response['results']:
                     self.insert_db(row)
