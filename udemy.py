@@ -20,7 +20,7 @@ session = DBSession()
 
 class Udemy:
     DB_CONFIG = 'mysql://root:password@localhost/udemy?charset=utf8mb4'
-    BASE_URL = "https://www.udemy.com/instructor-api/v1/taught-courses/questions/?fields[question]=@all"
+    BASE_URL = "https://www.udemy.com/instructor-api/v1/taught-courses/questions/?"
 
     max_page_size = 100
     next_url = ''
@@ -33,8 +33,8 @@ class Udemy:
     def get_headers(self):
         return {
             "Authorization": "bearer %s" % self.access_token,
-            "Content-Type": "application/json;charset=utf-8",
-            "Accept": "application/json, text/plain, */*"
+            "Content-Type": "application/json",
+            "Accept": "application/json"
         }
 
     def insert_db(self, dict):
@@ -68,7 +68,11 @@ class Udemy:
         :return: Boolean
         """
         url = self.BASE_URL + urlencode(dict) if self.next_url == '' else self.next_url
+
+
+        url = "%s&fields[question]=@all" % url
         logging.info("REQUEST to %s" % url)
+
         res = requests.get(url, headers=self.get_headers())
         response = res.json()
         if res.status_code > 200:
