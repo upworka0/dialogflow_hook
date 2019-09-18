@@ -60,10 +60,14 @@ class AnswerBot:
         response = res.json()
         if res.status_code > 400:
             logging.error("Error: %s " % response['detail'])
-            raise Exception('Error was occurred in answer to Udemy')
+            # raise Exception('Error was occurred in answer to Udemy')
+            return False
+        elif res.status_code == 400:
+            logging.error('Error: %s' % res.text)
         else:
-            logging.info("Response : %s" % json.dumps(response))
+            logging.info("Answer was sent to Udemy successfully, Answer id is %s" % response['id'])
         print("Answer was sent to Udemy successfully, Answer id is %s" % response['id'])
+        return True
 
     def adjust_question(self, text):
         text = text.replace('<p>', ' ')
@@ -108,13 +112,14 @@ class AnswerBot:
         """
         try:
             # send answer to api endpoint
-            self._answer(que.course.id, que.question_id, None, answer)
+            status = self._answer(que.course.id, que.question_id, None, answer)
 
-            # create new answer object
-            que.replied = True
-            answer_obj = Answer(response=answer, question=que)
-            session.add(answer_obj)
-            session.commit()
+            if status:
+                # create new answer object
+                que.replied = True
+                answer_obj = Answer(response=answer, question=que)
+                session.add(answer_obj)
+                session.commit()
         except:
             session.rollback()
 
