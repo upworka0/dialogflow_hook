@@ -8,6 +8,7 @@ from pprint import pprint
 import re
 import requests
 import json
+import time
 
 import logging
 logging.basicConfig(filename='log.log', level=logging.DEBUG, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
@@ -145,7 +146,14 @@ class AnswerBot:
         ]
 
         ques = session.query(Question).filter_by(replied=False).all()
+
+        cnt = 0
+
         for row in ques:
+            if cnt > 80:
+                cnt = 0
+                time.sleep(60)
+
             que_text = ""
             if row.body == '':
                 que_text = row.title
@@ -161,7 +169,7 @@ class AnswerBot:
             self.store_answer(response, row)
             print("Question is `%s`" % que_text)
             print("Answer is `%s`\n" % response)
-
+            cnt = cnt + 1
 
 if __name__ == '__main__':
     bot = AnswerBot(project_id=DIALOGFLOW_PROJECT_ID, access_token=ACCESS_TOKEN)
