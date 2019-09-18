@@ -115,8 +115,6 @@ class AnswerBot:
             answer_obj = Answer(response=answer, question=que)
             session.add(answer_obj)
             session.commit()
-
-
         except:
             session.rollback()
 
@@ -161,6 +159,6 @@ class AnswerBot:
 
 
 if __name__ == '__main__':
-    bot = AnswerBot(project_id=DIALOGFLOW_PROJECT_ID)
+    bot = AnswerBot(project_id=DIALOGFLOW_PROJECT_ID, access_token=ACCESS_TOKEN)
     bot.run()
     print("ENDED!")
