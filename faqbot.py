@@ -108,7 +108,7 @@ class AnswerBot:
         """
         try:
             # send answer to api endpoint
-            self._answer(que.course.id, que.id, None, answer)
+            self._answer(que.course.id, que.question_id, None, answer)
 
             # create new answer object
             que.replied = True
