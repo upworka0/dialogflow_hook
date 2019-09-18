@@ -34,11 +34,13 @@ class AnswerBot:
     language_code = "en"
     BASE_URL = "https://www.udemy.com/instructor-api/v1/courses/{0}/questions/{1}/replies/"
     access_token = ""
+    course_num = 0
 
 
-    def __init__(self, project_id, access_token=None):
+    def __init__(self, project_id, access_token=None, course_num=0):
         self.project_id = project_id
         self.access_token = access_token
+        self.course_num = course_num
 
     def get_headers(self):
         return {
@@ -145,7 +147,7 @@ class AnswerBot:
             "I missed that, say that again?"
         ]
 
-        ques = session.query(Question).filter_by(replied=False).all()
+        ques = session.query(Question).filter_by(replied=False, course_num=self.course_num).all()
 
         cnt = 0
 
@@ -172,6 +174,7 @@ class AnswerBot:
             cnt = cnt + 1
 
 if __name__ == '__main__':
-    bot = AnswerBot(project_id=DIALOGFLOW_PROJECT_ID, access_token=ACCESS_TOKEN)
+    course_num = COURSE_NUM
+    bot = AnswerBot(project_id=DIALOGFLOW_PROJECT_ID, access_token=ACCESS_TOKEN, course_num = course_num)
     bot.run()
     print("ENDED!")

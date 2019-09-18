@@ -35,6 +35,7 @@ class Question(Base):
     created = Column(String(20))
     course_id = Column(String(250), ForeignKey('courses.id'))
     course = relationship(Course)
+    course_num = Column(Integer, nullable=False)
     replied = Column(Boolean, default=False)
 
     def __str__(self):

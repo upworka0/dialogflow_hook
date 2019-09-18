@@ -11,3 +11,5 @@ ACCESS_TOKEN = ''
 # dialogflow app : Production
 DIALOGFLOW_PROJECT_ID = "faqbot-85266"
 GOOGLE_APPLICATION_CREDENTIALS = "FAQBot.json"
+
+COURSE_NUM = 950390

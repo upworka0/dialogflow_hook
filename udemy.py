@@ -4,7 +4,7 @@ from models import Course, Base, Question, Answer
 import requests
 from urllib.parse import urlencode
 import json
-from config import DB_URL, ACCESS_TOKEN
+from config import DB_URL, ACCESS_TOKEN, COURSE_NUM
 import logging
 from pprint import pprint
 
@@ -37,7 +37,7 @@ class Udemy:
             "Accept": "application/json"
         }
 
-    def insert_db(self, dict):
+    def insert_db(self, dict, course_num):
         # insert course if not exists.
         course_id = dict['course']['id']
         course = session.query(Course).get(course_id)
@@ -55,7 +55,7 @@ class Udemy:
         if not question:
             question = Question(question_id=question_id, title=dict['title'], body=dict['body'], num_replies=dict['num_replies'],
                                 num_follows=dict['num_follows'], num_reply_upvotes=dict['num_reply_upvotes'], created=dict['created'],
-                                course=course, replied=False)
+                                course=course, replied=False, course_num=course_num)
             session.add(question)
             session.commit()
             self.total_count = self.total_count + 1
@@ -81,7 +81,7 @@ class Udemy:
             logging.info("response: %s " % json.dumps(response))
             try:
                 for row in response['results']:
-                    self.insert_db(row)
+                    self.insert_db(row, dict['course'])
                 self.next_url = response['next']
                 if self.next_url:
                     return True
@@ -126,7 +126,7 @@ client = Udemy(access_token=ACCESS_TOKEN)
 dict ={
     "page_size": 100,
     "status": "unresponded",
-    "course": 950390,
+    "course": COURSE_NUM,
     "ordering": "recency"
 }
 client.start(dict)
