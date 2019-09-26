@@ -13,7 +13,7 @@ class Course(Base):
     __tablename__ = 'courses'
     # Here we define columns for the table courses
     # Notice that each column is also a normal Python instance attribute.
-    id = Column(String(250), primary_key=True)
+    id = Column(Integer, primary_key=True)          # course id
     _class = Column(String(50), nullable=False)     # class id
     title = Column(String(250), nullable=False)     # title of course
     url = Column(String(250), nullable=False)       # url of course
@@ -45,7 +45,6 @@ class Question(Base):
 
 class Answer(Base):
     __tablename__ = "answers"
-
     id = Column(Integer, primary_key=True, autoincrement=True)
     response = Column(Text())                                   # Answer text
     question_id = Column(Integer, ForeignKey('questions.id'))   # id of qeustion
