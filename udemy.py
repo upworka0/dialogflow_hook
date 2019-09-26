@@ -19,7 +19,6 @@ DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 class Udemy:
-    DB_CONFIG = 'mysql://root:password@localhost/udemy?charset=utf8mb4'
     BASE_URL = "https://www.udemy.com/instructor-api/v1/taught-courses/questions/?"
 
     max_page_size = 100
