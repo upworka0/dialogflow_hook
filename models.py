@@ -34,9 +34,9 @@ class Question(Base):
     num_follows = Column(Integer, nullable=True)                # count of follows
     num_reply_upvotes = Column(Integer, nullable=True)          # count of upvotes replied
     created = Column(String(20))                                # created date
-    course_id = Column(String(250), ForeignKey('courses.id'))   # id of course table
+    course_id = Column(Integer, ForeignKey('courses.id'))   # id of course table
     course = relationship(Course)                               # foreignkey of course
-    course_num = Column(Integer, nullable=False)                # int id of course
+    # course_num = Column(Integer, nullable=False)                # int id of course
     replied = Column(Boolean, default=False)                    # flag for reply
 
     def __str__(self):

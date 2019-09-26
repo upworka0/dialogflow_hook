@@ -38,14 +38,14 @@ class Udemy:
 
     def insert_db(self, dict, course_num):
         # insert course if not exists.
-        course_id = dict['course']['id']
-        course = session.query(Course).get(course_id)
+        # course_id = dict['course']['id']
+        course = session.query(Course).get(course_num)
         if not course:
             course_data = dict['course']
-            course = Course(id=course_id, _class=course_data['_class'], title=course_data['title'], url=course_data['url'])
+            course = Course(id=course_num, _class=course_data['_class'], title=course_data['title'], url=course_data['url'])
             session.add(course)
             session.commit()
-            logging.info('new Course insertted! Course id is %s' % course_id)
+            logging.info('new Course insertted! Course id is %s' % course_num)
 
         #insert question if not exists
         question_id = dict['id']

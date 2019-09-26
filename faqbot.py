@@ -126,12 +126,7 @@ class AnswerBot:
         except:
             session.rollback()
 
-
-    def run(self):
-        """
-        Running instance for all questions
-        :return: None
-        """
+    def unit(self, course_num):
         unexpected_answers = [
             "I didn't get that. Can you say it again?",
             "I missed what you said. What was that?",
@@ -146,8 +141,7 @@ class AnswerBot:
             "I didn't get that. Can you repeat?",
             "I missed that, say that again?"
         ]
-
-        ques = session.query(Question).filter_by(replied=False, course_num=self.course_num).all()
+        ques = session.query(Question).filter_by(replied=False, course_num=course_num).all()
 
         cnt = 0
 
@@ -172,6 +166,16 @@ class AnswerBot:
             print("Question is `%s`" % que_text)
             print("Answer is `%s`\n" % response)
             cnt = cnt + 1
+
+    def run(self):
+        """
+        Running instance for all questions
+        :return: None
+        """
+        courses = session.query(Course).all()
+        for course in courses:
+            self.unit(course.id)
+
 
 if __name__ == '__main__':
     course_num = COURSE_NUM
