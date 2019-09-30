@@ -6,7 +6,7 @@ from urllib.parse import urlencode
 import json
 from config import DB_URL, ACCESS_TOKEN, COURSE_NUM
 import logging
-from pprint import pprint
+
 
 logging.basicConfig(filename='log.log', level=logging.DEBUG, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 
@@ -19,7 +19,7 @@ DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 class Udemy:
-    BASE_URL = "https://www.udemy.com/instructor-api/v1/taught-courses/questions/?"
+    QUE_URL = "https://www.udemy.com/instructor-api/v1/taught-courses/questions/?"
 
     max_page_size = 100
     next_url = ''
@@ -36,25 +36,25 @@ class Udemy:
             "Accept": "application/json"
         }
 
-    def insert_db(self, dict, course_num):
+    def insert_db(self, dict, course_id):
         # insert course if not exists.
         # course_id = dict['course']['id']
-        course = session.query(Course).get(course_num)
+        course = session.query(Course).get(course_id)
         if not course:
             course_data = dict['course']
-            course = Course(id=course_num, _class=course_data['_class'], title=course_data['title'], url=course_data['url'])
+            course = Course(id=course_id, _class=course_data['_class'], title=course_data['title'], url=course_data['url'], str_id=dict['course']['id'])
             session.add(course)
             session.commit()
-            logging.info('new Course insertted! Course id is %s' % course_num)
+            logging.info('new Course insertted! Course id is %s' % course_id)
 
         #insert question if not exists
-        question_id = dict['id']
-        question = session.query(Question).filter_by(question_id=question_id).first()
+        str_id = dict['id']
+        question = session.query(Question).filter_by(str_id=str_id).first()
 
         if not question:
-            question = Question(question_id=question_id, title=dict['title'], body=dict['body'], num_replies=dict['num_replies'],
+            question = Question(str_id=str_id, title=dict['title'], body=dict['body'], num_replies=dict['num_replies'],
                                 num_follows=dict['num_follows'], num_reply_upvotes=dict['num_reply_upvotes'], created=dict['created'],
-                                course=course, replied=False, course_num=course_num)
+                                course=course, replied=False)
             session.add(question)
             session.commit()
             self.total_count = self.total_count + 1
@@ -66,7 +66,7 @@ class Udemy:
         :param dict: params of url
         :return: Boolean
         """
-        url = self.BASE_URL + urlencode(dict) if self.next_url == '' else self.next_url
+        url = self.QUE_URL + urlencode(dict) if self.next_url == '' else self.next_url
 
 
         url = "%s&fields[question]=@all" % url
@@ -107,28 +107,36 @@ class Udemy:
             return True
         return False
 
-    def start(self, dict={}):
+    def start(self):
         """
         Start function of Udemy
         :param dict: params of url
         :return: None
         """
-        while self.get_request(dict=dict):
-            print(self.next_url)
+        courses = session.query(Course).all()
+        for course in courses:
+            dict ={
+                "page_size": 100,
+                "status": "unresponded",
+                "course": course.id,
+                "ordering": "recency"
+            }
+            while self.get_request(dict=dict):
+                print(self.next_url)
 
 client = Udemy(access_token=ACCESS_TOKEN)
 
 # # testing with test.json file
-# client.test_with_json('test.json')
+client.test_with_json('test.json')
 
-# url params
-dict ={
-    "page_size": 100,
-    "status": "unresponded",
-    "course": COURSE_NUM,
-    "ordering": "recency"
-}
-client.start(dict)
+# # url params
+# dict ={
+#     "page_size": 100,
+#     "status": "unresponded",
+#     "course": COURSE_NUM,
+#     "ordering": "recency"
+# }
+# client.start(dict)
 
 # client.get_api_course_questions()
 # print("----------------------------------------------")
