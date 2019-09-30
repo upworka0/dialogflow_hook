@@ -6,7 +6,7 @@ from urllib.parse import urlencode
 import json
 from config import DB_URL, ACCESS_TOKEN, COURSE_NUM
 import logging
-
+import time
 
 logging.basicConfig(filename='log.log', level=logging.DEBUG, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 
@@ -122,21 +122,16 @@ class Udemy:
                 "ordering": "recency"
             }
             while self.get_request(dict=dict):
+                time.sleep(1)
                 print(self.next_url)
+
 
 client = Udemy(access_token=ACCESS_TOKEN)
 
 # # testing with test.json file
-client.test_with_json('test.json')
+# client.test_with_json('test.json')
 
-# # url params
-# dict ={
-#     "page_size": 100,
-#     "status": "unresponded",
-#     "course": COURSE_NUM,
-#     "ordering": "recency"
-# }
-# client.start(dict)
+client.start()
 
 # client.get_api_course_questions()
 # print("----------------------------------------------")

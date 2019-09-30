@@ -37,7 +37,7 @@ class UdemyAnswer:
             "Accept": "application/json, text/plain, */*"
         }
 
-    def _answer(self, course_id, question_id, user_id, answer_text):
+    def _answer(self, course_id, question_id, answer_text):
         payload = {
             "body": answer_text
         }
@@ -61,7 +61,7 @@ if __name__ == '__main__':
     udemy = UdemyAnswer(access_token=ACCESS_TOKEN)
     # udemy._answer(1,1,1,"test")
     print("-------------------------- Answer ---------------------------------------------\r\n")
-    udemy._answer("x01qeGSHjE7B-Vi7kqfXvCTlw==", "x01RuwcQJm4bPC3ngSsPSv0kg==", 1, "test")
+    udemy._answer("1460764", "x01kgfqwBOry0tghTcAbRqD5g==", "test")
 
     """
         Testing:

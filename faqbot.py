@@ -4,7 +4,6 @@ from config import *
 from models import Course, Base, Question, Answer
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from pprint import pprint
 import re
 import requests
 import json
@@ -49,7 +48,7 @@ class AnswerBot:
             "Accept": "application/json, text/plain, */*"
         }
 
-    def _answer(self, course_id, question_id, user_id, answer_text):
+    def _answer(self, course_id, question_id, answer_text):
         payload = {
             "body": answer_text
         }
@@ -115,7 +114,7 @@ class AnswerBot:
         """
         try:
             # send answer to api endpoint
-            status = self._answer(que.course.id, que.question_id, None, answer)
+            status = self._answer(que.course.id, que.str_id, answer)
 
             if status:
                 # create new answer object
@@ -126,7 +125,7 @@ class AnswerBot:
         except:
             session.rollback()
 
-    def unit(self, course_num):
+    def unit(self, course_id):
         unexpected_answers = [
             "I didn't get that. Can you say it again?",
             "I missed what you said. What was that?",
@@ -141,7 +140,7 @@ class AnswerBot:
             "I didn't get that. Can you repeat?",
             "I missed that, say that again?"
         ]
-        ques = session.query(Question).filter_by(replied=False, course_num=course_num).all()
+        ques = session.query(Question).filter_by(replied=False, course_id=course_id).all()
 
         cnt = 0
 
@@ -160,7 +159,8 @@ class AnswerBot:
             response = self.detect_intent_texts(que_text)
 
             if response in unexpected_answers:
-                response = "I'm sorry I didn't understand that! Can you please repeat the question and one of our TA's will respond shortly to assist <br> can we use that?"
+                response = "I'm sorry I didn't understand that! Can you please repeat the question and " \
+                           "one of our TA's will respond shortly to assist <br> can we use that?"
 
             self.store_answer(response, row)
             print("Question is `%s`" % que_text)
@@ -175,10 +175,16 @@ class AnswerBot:
         courses = session.query(Course).all()
         for course in courses:
             self.unit(course.id)
+        self.analysis()
 
+    def analysis(self):
+        """
+        Matrix function
+        """
+        pass
 
 if __name__ == '__main__':
     course_num = COURSE_NUM
-    bot = AnswerBot(project_id=DIALOGFLOW_PROJECT_ID, access_token=ACCESS_TOKEN, course_num = course_num)
+    bot = AnswerBot(project_id=DIALOGFLOW_PROJECT_ID, access_token=ACCESS_TOKEN)
     bot.run()
     print("ENDED!")
