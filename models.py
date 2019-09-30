@@ -62,7 +62,6 @@ class Matrix(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     course_id = Column(Integer, ForeignKey('courses.id'))       # id of course table
     course = relationship(Course)                               # foreignkey of course
-    course_str = Column(String(250), nullable=False)            # int id of course
     num_replied = Column(Integer, nullable=True)                # count of answered questions
     num_total = Column(Integer, nullable=True)                  # count of total obtained questions
     created = Column(DateTime(), nullable=False,
