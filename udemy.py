@@ -66,7 +66,7 @@ class Udemy:
         :param dict: params of url
         :return: Boolean
         """
-        url = self.QUE_URL + urlencode(dict) if self.next_url == '' else self.next_url
+        url = self.QUE_URL + urlencode(dict) if self.next_url == '' or self.next_url == None else self.next_url
 
 
         url = "%s&fields[question]=@all" % url
@@ -82,7 +82,7 @@ class Udemy:
                 for row in response['results']:
                     self.insert_db(row, dict['course'])
                 self.next_url = response['next']
-                if self.next_url:
+                if self.next_url and self.next_url != "null" and self.next_url is not None:
                     return True
             except Exception as e:
                 logging.error("Error in response parse: %s " % str(e))
