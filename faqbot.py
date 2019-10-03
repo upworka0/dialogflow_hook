@@ -194,7 +194,7 @@ class AnswerBot:
             else:
                 mat = Matrix(course_id=course.id, num_total=total, num_replied=replied)
                 session.add(mat)
-                session.commit()
+            session.commit()
             print("-------------------------------Anysis Results-----------------------------")
             print(" Couse %s : Total Questions: %s, Replied Question: %s" % (course.id, total, replied))
 
