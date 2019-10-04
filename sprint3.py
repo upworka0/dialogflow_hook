@@ -58,11 +58,14 @@ class UdemyAnswer:
 
 
 if __name__ == '__main__':
-    udemy = UdemyAnswer(access_token=ACCESS_TOKEN)
+    # udemy = UdemyAnswer(access_token=ACCESS_TOKEN)
     # udemy._answer(1,1,1,"test")
     print("-------------------------- Answer ---------------------------------------------\r\n")
-    udemy._answer("1460764", "x01kgfqwBOry0tghTcAbRqD5g==", "test")
+    # udemy._answer("1460764", "x01kgfqwBOry0tghTcAbRqD5g==", "test")
+    import datetime
 
+
+    print(datetime.datetime.now().strftime("%Y-%m-%d"))
     """
         Testing:
             >>>            

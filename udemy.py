@@ -7,6 +7,7 @@ import json
 from config import DB_URL, ACCESS_TOKEN, COURSE_NUM
 import logging
 import time
+import datetime
 
 logging.basicConfig(filename='log.log', level=logging.DEBUG, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 
@@ -55,10 +56,13 @@ class Udemy:
             question = Question(str_id=str_id, title=dict['title'], body=dict['body'], num_replies=dict['num_replies'],
                                 num_follows=dict['num_follows'], num_reply_upvotes=dict['num_reply_upvotes'], created=dict['created'],
                                 course=course, replied=False)
-            session.add(question)
-            session.commit()
             self.total_count = self.total_count + 1
-            # logging.info('new Question insertted! Question id is %s' % question_id)
+        else:
+            question.timestamp = datetime.datetime.now()
+
+        session.add(question)
+        session.commit()
+        logging.info('new Question insertted! Question id is %s' % str_id)
 
     def get_request(self, dict={}):
         """

@@ -7,7 +7,7 @@ from sqlalchemy.orm import sessionmaker
 import re
 import requests
 import json
-import time
+import time, datetime
 
 import logging
 logging.basicConfig(filename='log.log', level=logging.DEBUG, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
@@ -140,7 +140,8 @@ class AnswerBot:
             "I didn't get that. Can you repeat?",
             "I missed that, say that again?"
         ]
-        ques = session.query(Question).filter_by(replied=False, course_id=course_id).all()
+        _date = datetime.datetime.now().strftime("%Y-%m-%d")
+        ques = session.query(Question).filter_by(replied=False, course_id=course_id).filter(Question.timestamp.contains(_date)).all()
 
         cnt = 0
 
@@ -176,27 +177,34 @@ class AnswerBot:
         for course in courses:
             self.unit(course.id)
 
+        self.store_matrix()
         self.analysis()
 
-    def analysis(self):
+    def store_matrix(self):
         """
         Matrix function
         """
         courses = session.query(Course).all()
         for course in courses:
-            total = session.query(Question).filter_by(course_id=course.id).count()
-            replied = session.query(Question).filter_by(replied=True, course_id=course.id).count()
+            _date = datetime.datetime.now().strftime("%Y-%m-%d")
+            total = session.query(Question).filter_by(course_id=course.id).filter(
+                Question.timestamp.contains(_date)).count()
+            replied = session.query(Question).filter_by(replied=True, course_id=course.id).filter(
+                Question.timestamp.contains(_date)).count()
 
-            rec = session.query(Matrix).filter_by(course_id=course.id).first()
-            if rec:
-                rec.num_total = total
-                rec.num_replied = replied
-            else:
-                mat = Matrix(course_id=course.id, num_total=total, num_replied=replied)
-                session.add(mat)
+            # rec = session.query(Matrix).filter_by(course_id=course.id).first()
+            # if rec:
+            #     rec.num_total = total
+            #     rec.num_replied = replied
+            # else:
+            mat = Matrix(course_id=course.id, num_total=total, num_replied=replied)
+            session.add(mat)
             session.commit()
             print("-------------------------------Anysis Results-----------------------------")
             print(" Couse %s : Total Questions: %s, Replied Question: %s" % (course.id, total, replied))
+
+    def analysis(self):
+        analysis_data = []
 
 
 if __name__ == '__main__':
