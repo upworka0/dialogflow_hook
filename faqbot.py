@@ -7,7 +7,9 @@ from sqlalchemy.orm import sessionmaker
 import re
 import requests
 import json
-import time, datetime
+import time
+from datetime import datetime, timedelta
+from pprint import pprint
 
 import logging
 logging.basicConfig(filename='log.log', level=logging.DEBUG, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
@@ -140,7 +142,7 @@ class AnswerBot:
             "I didn't get that. Can you repeat?",
             "I missed that, say that again?"
         ]
-        _date = datetime.datetime.now().strftime("%Y-%m-%d")
+        _date = datetime.now().strftime("%Y-%m-%d")
         ques = session.query(Question).filter_by(replied=False, course_id=course_id).filter(Question.timestamp.contains(_date)).all()
 
         cnt = 0
@@ -177,8 +179,9 @@ class AnswerBot:
         for course in courses:
             self.unit(course.id)
 
-        self.store_matrix()
-        self.analysis()
+        self.store_matrix() # store matrix
+        analysis_data = self.analysis() # analysis matrix for today, weekly, monthly
+        pprint(analysis_data)
 
     def store_matrix(self):
         """
@@ -186,7 +189,7 @@ class AnswerBot:
         """
         courses = session.query(Course).all()
         for course in courses:
-            _date = datetime.datetime.now().strftime("%Y-%m-%d")
+            _date = datetime.now().strftime("%Y-%m-%d")
             total = session.query(Question).filter_by(course_id=course.id).filter(
                 Question.timestamp.contains(_date)).count()
             replied = session.query(Question).filter_by(replied=True, course_id=course.id).filter(
@@ -203,8 +206,50 @@ class AnswerBot:
             print("-------------------------------Anysis Results-----------------------------")
             print(" Couse %s : Total Questions: %s, Replied Question: %s" % (course.id, total, replied))
 
+    def get_analysis_data(self, matrixs):
+        # Analysis Matrix Data
+        _matrixs = {}
+        _total = 0
+        _replied = 0
+        for mat in matrixs:
+            course_id = str(mat.course_id)
+            if course_id in _matrixs:
+                _matrixs[course_id]['num_total'] = _matrixs[course_id]['num_total'] + mat.num_total
+                _matrixs[course_id]['num_replied'] = _matrixs[course_id]['num_replied'] + mat.num_replied
+            else:
+                _matrixs.update({ course_id: {
+                    "num_replied": mat.num_replied,
+                    "num_total": mat.num_total,
+                }})
+
+            _total = _total + mat.num_total
+            _replied = _replied + mat.num_replied
+
+        _data = {
+            "num_total": _total,
+            "num_replied": _replied,
+            "matrix": _matrixs
+        }
+        return _data
+
     def analysis(self):
-        analysis_data = []
+        analysis_data = {}
+        today_matrixs = session.query(Matrix).filter(Matrix.created > (datetime.now() - timedelta(days=1))).all()
+        today_data = self.get_analysis_data(today_matrixs)
+        analysis_data.update({"today": today_data})
+
+        # Analysis this week's Data
+        week_matrixs = session.query(Matrix).filter(Matrix.created > (datetime.now() - timedelta(weeks=1))).all()
+        week_data = self.get_analysis_data(week_matrixs)
+        analysis_data.update({"week": week_data})
+
+        # Analysis this month's Data
+        month_matrixs = session.query(Matrix).filter(Matrix.created > (datetime.now() - timedelta(days=365/12))).all()
+        month_data = self.get_analysis_data(month_matrixs)
+        analysis_data.update({"month": month_data})
+
+        return analysis_data
+
 
 
 if __name__ == '__main__':
