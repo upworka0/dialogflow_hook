@@ -20,7 +20,7 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
-from .faqbot import AnswerBot
+from faqbot import AnswerBot
 
 class Udemy:
     QUE_URL = "https://www.udemy.com/instructor-api/v1/taught-courses/questions/?"
