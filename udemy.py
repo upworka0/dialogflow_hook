@@ -4,10 +4,11 @@ from models import Course, Base, Question, Answer
 import requests
 from urllib.parse import urlencode
 import json
-from config import DB_URL, ACCESS_TOKEN, COURSE_NUM
 import logging
 import time
 import datetime
+import os
+from config import *
 
 logging.basicConfig(filename='log.log', level=logging.DEBUG, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 
@@ -18,6 +19,8 @@ Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
+
+from .faqbot import AnswerBot
 
 class Udemy:
     QUE_URL = "https://www.udemy.com/instructor-api/v1/taught-courses/questions/?"
@@ -134,9 +137,20 @@ client = Udemy(access_token=ACCESS_TOKEN)
 
 # # testing with test.json file
 # client.test_with_json('test.json')
-
+print("STARTED!")
 client.start()
 
 # client.get_api_course_questions()
 # print("----------------------------------------------")
 # client.get_api_taught_course_questions()
+
+# Start FAQBOT here
+
+# ENV configuration
+os.environ['DIALOGFLOW_PROJECT_ID'] = DIALOGFLOW_PROJECT_ID
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = GOOGLE_APPLICATION_CREDENTIALS
+
+course_num = COURSE_NUM
+bot = AnswerBot(project_id=DIALOGFLOW_PROJECT_ID, access_token=ACCESS_TOKEN)
+bot.run()
+print("ENDED!")
