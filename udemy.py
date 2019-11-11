@@ -15,6 +15,11 @@ from pprint import pprint
 from config import *
 # from faqbot import AnswerBot
 
+import argparse
+parser = argparse.ArgumentParser(allow_abbrev=False)
+parser.add_argument('--analysis', help='Function', action='store_true')
+args = parser.parse_args()
+
 logging.basicConfig(filename='/root/udemy/log.log', level=logging.DEBUG, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 
 
@@ -373,25 +378,33 @@ class Udemy:
 
 client = Udemy(access_token=ACCESS_TOKEN)
 
-# # testing with test.json file
-# client.test_with_json('test.json')
-print("STARTED!")
-client.start()
+if not args.analysis:
+    # # testing with test.json file
+    # client.test_with_json('test.json')
+    print("STARTED!")
+    client.start()
 
-# client.get_api_course_questions()
-# print("----------------------------------------------")
-# client.get_api_taught_course_questions()
+    # client.get_api_course_questions()
+    # print("----------------------------------------------")
+    # client.get_api_taught_course_questions()
 
-# Start FAQBOT here
+    # Start FAQBOT here
 
-# ENV configuration
-os.environ['DIALOGFLOW_PROJECT_ID'] = DIALOGFLOW_PROJECT_ID
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = GOOGLE_APPLICATION_CREDENTIALS
+    # ENV configuration
+    os.environ['DIALOGFLOW_PROJECT_ID'] = DIALOGFLOW_PROJECT_ID
+    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = GOOGLE_APPLICATION_CREDENTIALS
 
-course_num = COURSE_NUM
-try:
-    bot = AnswerBot(project_id=DIALOGFLOW_PROJECT_ID, access_token=ACCESS_TOKEN)
-    bot.run()
-except Exception as e:
-    logging.info("Error: %s" % str(e))
-print("ENDED!")
+    course_num = COURSE_NUM
+    try:
+        bot = AnswerBot(project_id=DIALOGFLOW_PROJECT_ID, access_token=ACCESS_TOKEN)
+        bot.run()
+    except Exception as e:
+        logging.info("Error: %s" % str(e))
+    print("ENDED!")
+else:
+    try:
+        bot = AnswerBot(project_id=DIALOGFLOW_PROJECT_ID, access_token=ACCESS_TOKEN)
+        pprint(bot.analysis())
+    except Exception as e:
+        logging.info("Error: %s" % str(e))
+    print("ENDED!")
