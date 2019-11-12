@@ -401,7 +401,7 @@ class Udemy:
 
 client = Udemy(access_token=ACCESS_TOKEN)
 
-args.analysis = True
+
 if not args.analysis:
     # # testing with test.json file
     # client.test_with_json('test.json')
@@ -418,7 +418,6 @@ if not args.analysis:
     os.environ['DIALOGFLOW_PROJECT_ID'] = DIALOGFLOW_PROJECT_ID
     os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = GOOGLE_APPLICATION_CREDENTIALS
 
-    course_num = COURSE_NUM
     try:
         bot = AnswerBot(project_id=DIALOGFLOW_PROJECT_ID, access_token=ACCESS_TOKEN)
         bot.run()
