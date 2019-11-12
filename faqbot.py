@@ -249,11 +249,3 @@ class AnswerBot:
         analysis_data.update({"month": month_data})
 
         return analysis_data
-
-
-
-if __name__ == '__main__':
-    course_num = COURSE_NUM
-    bot = AnswerBot(project_id=DIALOGFLOW_PROJECT_ID, access_token=ACCESS_TOKEN)
-    bot.run()
-    print("ENDED!")
