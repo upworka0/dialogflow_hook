@@ -37,6 +37,7 @@ class Question(Base):
     course_id = Column(Integer, ForeignKey('courses.id'))       # id of course table
     course = relationship(Course)                               # foreignkey of course
     replied = Column(Boolean, default=False)                    # flag for reply
+    duplicated = Column(Integer, default=0)      # duplication count
     timestamp = Column(TIMESTAMP, nullable=False)  # created date
 
     def __str__(self):

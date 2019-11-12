@@ -20,7 +20,7 @@ parser = argparse.ArgumentParser(allow_abbrev=False)
 parser.add_argument('--analysis', help='Function', action='store_true')
 args = parser.parse_args()
 
-logging.basicConfig(filename='/root/udemy/log.log', level=logging.DEBUG, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+logging.basicConfig(filename='log.log', level=logging.DEBUG, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 
 
 engine = create_engine(DB_URL)
@@ -219,6 +219,25 @@ class AnswerBot:
             logging.info("-------------------------------Anysis Results-----------------------------")
             logging.info(" Couse %s : Total Questions: %s, Replied Question: %s" % (course.id, total, replied))
 
+    def get_matrix(self, delta):
+        """
+            Matrix function
+        """
+        courses = session.query(Course).all()
+        _matrix = {}
+        for course in courses:
+            _date = datetime.now().strftime("%Y-%m-%d")
+            total = session.query(Question).filter_by(course_id=course.id).filter(
+                Question.created > (datetime.now() - timedelta(delta))).count()
+
+            replied = session.query(Question).filter_by(replied=True, course_id=course.id).filter(
+                Question.created > (datetime.now() - timedelta(delta))).count()
+            _matrix.update({course.id: {
+                "num_replied": replied,
+                "num_total": total
+            }})
+        return _matrix
+
     def get_analysis_data(self, matrixs):
         # Analysis Matrix Data
         _matrixs = {}
@@ -252,13 +271,13 @@ class AnswerBot:
         analysis_data.update({"today": today_data})
 
         # Analysis this week's Data
-        week_matrixs = session.query(Matrix).filter(Matrix.created > (datetime.now() - timedelta(weeks=1))).all()
-        week_data = self.get_analysis_data(week_matrixs)
+        # week_questions = session.query(Question).filter(Question.timestamp > (datetime.now() - timedelta(weeks=1))).all()
+        week_data = self.get_matrix(delta=7)
         analysis_data.update({"week": week_data})
 
         # Analysis this month's Data
-        month_matrixs = session.query(Matrix).filter(Matrix.created > (datetime.now() - timedelta(days=365/12))).all()
-        month_data = self.get_analysis_data(month_matrixs)
+        # month_questions = session.query(Question).filter(Question.created > (datetime.now() - timedelta(days=365/12))).all()
+        month_data = self.get_matrix(365/12)
         analysis_data.update({"month": month_data})
 
         return analysis_data
@@ -301,10 +320,11 @@ class Udemy:
         if not question:
             question = Question(str_id=str_id, title=dict['title'], body=dict['body'], num_replies=dict['num_replies'],
                                 num_follows=dict['num_follows'], num_reply_upvotes=dict['num_reply_upvotes'], created=dict['created'],
-                                course=course, replied=False)
+                                course=course, replied=False, duplicated=0)
             self.total_count = self.total_count + 1
         else:
             question.timestamp = datetime.now()
+            question.duplicated = question.duplicated + 1
 
         session.add(question)
         session.commit()
@@ -330,7 +350,10 @@ class Udemy:
             logging.info("response: %s " % json.dumps(response))
             try:
                 for row in response['results']:
-                    self.insert_db(row, dict['course'])
+                    try:
+                        self.insert_db(row, dict['course'])
+                    except:
+                        session.rollback()
                 self.next_url = response['next']
                 if self.next_url and self.next_url != "null" and self.next_url is not None:
                     return True
@@ -378,6 +401,7 @@ class Udemy:
 
 client = Udemy(access_token=ACCESS_TOKEN)
 
+args.analysis = True
 if not args.analysis:
     # # testing with test.json file
     # client.test_with_json('test.json')
