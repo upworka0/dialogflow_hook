@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine,extract
 from sqlalchemy.orm import sessionmaker
 from models import Course, Base, Question, Answer, Matrix
 import requests
@@ -6,6 +6,7 @@ import logging
 from datetime import datetime, timedelta
 import pandas as pd
 from os import path
+import csv
 
 from config import *
 
@@ -19,6 +20,15 @@ Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
+
+def write_csv(lines, filename):
+    """
+    Write lines to csv named as filename
+    """
+    file_path = "/home/user/ftp/files/%s" % filename
+    with open(file_path, 'w', encoding='utf-8', newline='') as writeFile:
+        writer = csv.writer(writeFile, delimiter=',')
+        writer.writerows(lines)
 
 def get_headers():
     global ACCESS_TOKEN
@@ -64,6 +74,36 @@ def get_matrix(delta):
         }})
     return _matrix
 
+
+def get_months_matrix():
+    start_year = 2019
+    end_year = datetime.today().year
+    end_month = datetime.today().month    
+    _matrix_rows = []
+    _header = ["Year", "Month"]
+    courses = session.query(Course).all()
+    for course in courses:
+        _header.append(str(course.title) + "_month_num_total")
+        _header.append(str(course.title) + "_month_num_replied")
+
+    for year in range(start_year, end_year+1):        
+        for month in range(1, 13):
+            if year == end_year and month > end_month:
+                break
+            row = [year, month]
+            for course in courses:
+                total = session.query(Question).filter_by(course_id=course.id).filter(
+                    extract('year', Question.created) == year).filter(
+                    extract('month', Question.created) == month).count()
+                replied = session.query(Question).filter_by(replied=True, course_id=course.id).filter(
+                    extract('year', Question.created) == year).filter(
+                    extract('month', Question.created) == month).count()
+                # print(year, month, course.id, total, replied)
+                # row.append(course.id)
+                row.append(total)
+                row.append(replied)
+            _matrix_rows.append(row)
+    write_csv([_header] + _matrix_rows, 'monthly_results.csv')
 
 def analysis():
     analysis_data = {}
@@ -111,11 +151,12 @@ def analysis():
     return df
 
 try:
+    get_months_matrix()
     df = analysis()
-    if path.exists('course_total_daily.csv'):
-        df.to_csv('course_total_daily.csv', mode='a', index=False, header=False)
-    else:
-        df.to_csv('course_total_daily.csv', mode='a', index=False, header=True)
+    # if path.exists('/home/user/ftp/files/course_total_daily.csv'):
+    #     df.to_csv('/home/user/ftp/files/course_total_daily.csv', mode='a', index=False, header=False)
+    # else:
+    df.to_csv('/home/user/ftp/files/course_total_daily.csv', mode='a', index=False, header=True)    
 except Exception as e:
     logging.info("Error: %s" % str(e))
 print("ENDED!")
